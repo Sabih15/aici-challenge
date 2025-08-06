@@ -1,25 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
+import morgan from 'morgan'
 import { PrismaClient } from '@prisma/client';
+import todoRoutes from './routes/todo.routes';
 import { AppError } from './utils/errorHandler';
-import userRoutes from './routes/user.routes';
 
-const app = express();
+export const app = express()
 
-//Middleware
-app.use(cors());
-app.use(helmet());
-app.use(morgan('dev'));
-app.use(express.json());
+// Middleware
+app.use(cors())
+app.use(helmet())
+app.use(morgan('dev'))
+app.use(express.json())
 
-//Routes
+// Routes
 app.get('/', (_req, res) => res.send('Service is running'));
-app.use('/api/users', userRoutes);
+app.use('/api/todos', todoRoutes);
 
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err instanceof AppError) {
