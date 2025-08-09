@@ -1,0 +1,36 @@
+<div class="register-container">
+  <h2>Register</h2>
+
+  <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="email" formControlName="username" placeholder="Enter email" />
+      <small *ngIf="signUpForm.get('username')?.hasError('required') && signUpForm.get('username')?.touched">
+        Username is required
+      </small>
+      <small *ngIf="signUpForm.get('username')?.hasError('email') && signUpForm.get('username')?.touched">
+        Username is not a valid email address
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" formControlName="password" placeholder="Enter password"/>
+      <small *ngIf="signUpForm.get('password')?.hasError('required') && signUpForm.get('password')?.touched">
+        Password is required
+      </small>
+      <small *ngIf="signUpForm.get('password')?.hasError('minlength') && signUpForm.get('password')?.touched">
+        Password minimum length should be 6
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="signUpForm.invalid || loading">
+      <span *ngIf="loading" class="loader"></span>
+      {{ loading ? 'Signing up...' : 'Register' }}
+    </button>
+  </form>
+
+  <p class="switch-link">
+    Already have an account? <a routerLink="/login">Login here</a>
+  </p>
+</div>

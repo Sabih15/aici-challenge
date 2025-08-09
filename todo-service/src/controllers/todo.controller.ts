@@ -37,10 +37,10 @@ export class TodoController {
 
   async updateTodo(req: Request, res: Response) {
     try {
-      const user_uuid = req.user?.user_uuid as string
+      const uuid = req.params.uuid as string
       const { content } = req.body
 
-      const updatedTodo = await this.todoService.updateTodo(user_uuid, { content })
+      const updatedTodo = await this.todoService.updateTodo(uuid, { content })
       res.status(200).json(updatedTodo)
     } catch (error) {
       if (error instanceof AppError) {
@@ -53,9 +53,9 @@ export class TodoController {
 
   async deleteTodo(req: Request, res: Response) {
     try {
-      const user_uuid = req.user?.user_uuid as string
+      const uuid = req.params.uuid as string
 
-      await this.todoService.deleteTodo(user_uuid)
+      await this.todoService.deleteTodo(uuid)
       res.status(204).send()
     } catch (error) {
       if (error instanceof AppError) {

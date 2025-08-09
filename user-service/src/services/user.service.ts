@@ -12,7 +12,7 @@ export class UserService
     constructor()
     {
         this.userRepository = new UserRepository();
-        this.jwtSecret = process.env.JTW_SECRET || 'default_secret';
+        this.jwtSecret = process.env.JWT_SECRET || 'default_secret';
     }
 
     async register(userData: IUserCredential): Promise<IUser>

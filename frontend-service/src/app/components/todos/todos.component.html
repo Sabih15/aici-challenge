@@ -1,0 +1,23 @@
+<div class="todos-container">
+  <h2>📝 My Todos</h2>
+
+  <!-- Add Todo Form -->
+  <app-todo-form (todoAdded)="addTodo($event)"></app-todo-form>
+
+  <!-- Todo List -->
+  <ul class="todo-list">
+    <li *ngFor="let todo of todos" class="todo-item">
+      <span class="todo-content">{{ todo.content }}</span>
+      <div class="todo-actions">
+        <button class="btn-edit" (click)="updateTodo(todo.uuid)">✏️ Edit</button>
+        <button class="btn-delete" (click)="deleteTodo(todo.uuid)">🗑️ Delete</button>
+      </div>
+    </li>
+  </ul>
+
+  <!-- Empty State -->
+  <p *ngIf="todos.length === 0" class="empty-state">
+    🎉 No todos yet! Add your first one above.
+  </p>
+</div>
+

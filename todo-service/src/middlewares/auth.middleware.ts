@@ -6,14 +6,13 @@ import { AppError } from "../utils/errorHandler";
 
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    
     if (!token) {
         throw new AppError('Authentication required', 401);
     }
 
     try {
         const decoded = verify(token, process.env.JWT_SECRET!) as UserJwtPayload;
-        req.user = decoded; // Now properly typed
+        req.user = decoded;
         next();
     } catch (error) {
         throw new AppError('Invalid token', 401);
