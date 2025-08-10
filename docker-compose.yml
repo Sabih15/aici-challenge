@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # Frontend Service
+  frontend:
+    build: ./frontend-service
+    ports:
+      - "3000:80"
+    depends_on:
+      - user-service
+      - todo-service
+    restart: unless-stopped
+
+  # User Service
+  user-service:
+    build: ./user-service
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=user-db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=userdb
+      - JWT_SECRET=someveryuniqueandhiddensecret
+    depends_on:
+      - user-db
+    restart: unless-stopped
+
+  # Todo Service
+  todo-service:
+    build: ./todo-service
+    ports:
+      - "8001:8001"
+    environment:
+      - DB_HOST=todo-db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=tododb
+      - JWT_SECRET=someveryuniqueandhiddensecret
+      - USER_SERVICE_URL=http://user-service:8000
+    depends_on:
+      - todo-db
+      - user-service
+    restart: unless-stopped
+
+  # Databases
+  user-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=userdb
+    volumes:
+      - user-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+
+  todo-db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=tododb
+    volumes:
+      - todo-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    restart: unless-stopped
+
+volumes:
+  user-data:
+  todo-data:

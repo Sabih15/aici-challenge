@@ -4,7 +4,7 @@ import { AppError } from '../utils/errorHandler';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-jest.mock('../src/repository/user.repository');
+jest.mock('../repository/user.repository');
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
 
@@ -15,26 +15,32 @@ describe('UserService', () => {
     beforeEach(() => {
         mockUserRepository = new UserRepository() as jest.Mocked<UserRepository>;
         userService = new UserService();
-        (userService as any).UserRepository = mockUserRepository;
+        (userService as any).userRepository = mockUserRepository;
         process.env.JWT_SECRET = 'test_secret';
     });
 
-    describe('register', async () => {
+    describe('register', () => {
         it('should register a new user', async () => {
             const userData = { email: 'test@example.com', password: 'password123' };
+            const hashedPassword = 'hashedPassword';
+
             mockUserRepository.findByEmail.mockResolvedValue(null);
+            (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
             mockUserRepository.create.mockResolvedValue({
                 id: 1,
                 uuid: 'uuid',
                 email: userData.email,
-                password: 'hashedPassword'
+                password: hashedPassword
             });
 
             const result = await userService.register(userData);
 
             expect(mockUserRepository.findByEmail).toHaveBeenCalledWith(userData.email);
             expect(bcrypt.hash).toHaveBeenCalledWith(userData.password, 10);
-            expect(mockUserRepository.create).toHaveBeenCalled();
+            expect(mockUserRepository.create).toHaveBeenCalledWith({
+                ...userData,
+                password: hashedPassword
+            });
             expect(result.email).toBe(userData.email);
         });
 
@@ -51,7 +57,7 @@ describe('UserService', () => {
         });
 
         it('should throw error if password is too short', async () => {
-            const userData = { email: "test@example.com", password: "password123" };
+            const userData = { email: "test@example.com", password: "12345" };
             await expect(userService.register(userData)).rejects.toThrow(AppError);
         });
     });

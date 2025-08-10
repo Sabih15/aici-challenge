@@ -21,6 +21,9 @@ export class UserService
         if (existingUser)
             throw new AppError("Email already in use", 409)
 
+        else if (userData.password.length < 6)
+            throw new AppError("Password must be at least 6 characters long", 400);
+
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         return this.userRepository.create
         ({
